@@ -12,13 +12,13 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, local_files_only=True)
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
 def get_answer(question, context_text):
-    context_chunks = [context_text[i:i+500] for i in range(0, len(context_text), 500)]
+    text_chunks = [context_text[i:i+500] for i in range(0, len(context_text), 500)]
 
-    context_embeddings = embedder.encode(context_chunks)
+    text_emb = embedder.encode(text_chunks)
     question_embedding = embedder.encode([question])[0]
 
-    similarities = cosine_similarity([question_embedding], context_embeddings)[0]
-    best_chunk = context_chunks[np.argmax(similarities)]
+    same = cosine_similarity([question_embedding], text_emb)[0]
+    best_chunk = text_chunks[np.argmax(same)]
 
     prompt = f"Context: {best_chunk}\nQuestion: {question}\nAnswer:"
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
